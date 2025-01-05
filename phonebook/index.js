@@ -27,6 +27,12 @@ let persons = [
 ]
 
 
+// get info
+app.get('/info', (request, response) => { 
+  const date = new Date()
+  response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`)
+})
+
 // get all persons
 app.get('/api/persons', (request, response) => {
   if (persons) {

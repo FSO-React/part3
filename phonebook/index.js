@@ -63,6 +63,47 @@ app.delete('/api/persons/:id', (request, response) => {
   response.status(204).end()
 })
 
+// generate unique id
+generateId = () => {
+  let id = Math.floor(Math.random() * 1000000)
+  while (persons.find(person => person.id === id)) {
+    id = Math.floor(Math.random() * 1000000)
+  }
+  return Math.floor(Math.random() * 1000000)
+}
+
+// post one person
+app.post('/api/persons', (request, response) => {
+  const body = request.body
+
+  // checks
+  if (!body.name || body.name.trim().length === 0) {
+    return response.status(400).json({ 
+      error: 'missing name' 
+    })
+  }
+  if (!body.number || body.number.trim().length === 0) {
+    return response.status(400).json({ 
+      error: 'missing number' 
+    })
+  }
+  if (persons.find(person => person.name === body.name)) {
+    return response.status(400).json({ 
+      error: 'name must be unique' 
+    })
+  }
+
+  // create person object
+  const person = {
+    name: body.name,
+    number: Number(body.number),
+    id: generateId(),
+  }
+
+  persons = persons.concat(person)
+  response.json(person)
+})
+
 
 const PORT = 3001
 app.listen(PORT, () => {

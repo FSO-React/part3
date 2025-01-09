@@ -2,6 +2,6 @@ POST http://localhost:3001/api/notes
 Content-Type: application/json
 
 {
-  "title": "My new note",
-  "content": "This is my new note"
+  "title": "REST API Test",
+  "content": "Maybe a test idk"
 }

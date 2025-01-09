@@ -14,6 +14,7 @@ morgan.token('body', (req) => {
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
+const Person = require('./models/contact');
 
 let persons = [
   { 
@@ -47,48 +48,29 @@ app.get('/info', (request, response) => {
 
 // get all persons
 app.get('/api/persons', (request, response) => {
-  if (persons) {
+  Person.find({}).then(persons => {
     response.json(persons)
-  }
-  else {
-    response.status(404).end()
-  }
+  })
 })
 
 // get one person
 app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = persons.find(person => person.id === id)
-  
-  if (person) {
+  Person.findById(request.params.id).then(person => {
     response.json(person)
-  } else {
-    response.status(404).end()
-  }
+  })
 })
 
 // delete one person
 app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(person => person.id !== id)
-
-  response.status(204).end()
+  Person.deleteOne({ _id: request.params.id }).then(deletedPerson => {
+    response.json(deletedPerson)
+  })
 })
-
-// generate unique id
-generateId = () => {
-  let id = Math.floor(Math.random() * 1000000)
-  while (persons.find(person => person.id === id)) {
-    id = Math.floor(Math.random() * 1000000)
-  }
-  return Math.floor(Math.random() * 1000000)
-}
 
 // post one person
 app.post('/api/persons', (request, response) => {
   const body = request.body
 
-  // checks
   if (!body.name || body.name.trim().length === 0) {
     return response.status(400).json({ 
       error: 'missing name' 
@@ -99,21 +81,22 @@ app.post('/api/persons', (request, response) => {
       error: 'missing number' 
     })
   }
-  if (persons.find(person => person.name === body.name)) {
-    return response.status(400).json({ 
-      error: 'name must be unique' 
-    })
-  }
+  Person.find({}).then(persons => {
+    if (persons.find(person => person.name === body.name)) {
+      return response.status(400).json({ 
+        error: 'name must be unique' 
+      })
+    }
+  })
 
-  // create person object
-  const person = {
+  const person = new Person({
     name: body.name,
-    number: Number(body.number),
-    id: generateId(),
-  }
+    number: body.number,
+  })
 
-  persons = persons.concat(person)
-  response.json(person)
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 

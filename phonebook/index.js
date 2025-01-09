@@ -19,15 +19,20 @@ const Person = require('./models/contact');
 // get info
 app.get('/info', (request, response) => { 
   const date = new Date()
-  const persons = Person.find({}).then(persons => { return persons })
-  response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`)
+  Person.find({})
+    .then(persons => { 
+      response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`)
+    })
+    .catch(error => { next(error) })
 })
 
 // get all persons
 app.get('/api/persons', (request, response) => {
-  Person.find({}).then(persons => {
-    response.json(persons)
-  })
+  Person.find({})
+    .then(persons => {
+      response.json(persons)
+    })
+    .catch(error => { next(error) })
 })
 
 // get one person
@@ -42,11 +47,7 @@ app.get('/api/persons/:id', (request, response) => {
         response.status(404).end()
       }
     })
-    .catch(error => {
-      console.log('error en busqueda')
-      console.log(error)
-      response.status(500).end()
-    })
+    .catch(error => { next(error) })
 })
 
 // delete one person
@@ -55,10 +56,7 @@ app.delete('/api/persons/:id', (request, response) => {
     .then(deletedPerson => {
       response.json(deletedPerson)
     })
-    .catch(error => {
-      console.log(error)
-      response.status(500).end()
-    })
+    .catch(error => { next(error) })
 })
 
 // post one person
@@ -87,11 +85,28 @@ app.post('/api/persons', (request, response) => {
     name: body.name,
     number: body.number,
   })
-
-  person.save().then(savedPerson => {
-    response.json(savedPerson)
-  })
+  person.save()
+    .then(savedPerson => {
+      response.json(savedPerson)
+    })
+    .catch(error => { next(error) })
 })
+
+// unknown endpoint middleware
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+app.use(unknownEndpoint)
+
+// error handler middleware 
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+  next(error)
+}
+app.use(errorHandler)
 
 
 const PORT = process.env.PORT || 3001

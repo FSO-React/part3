@@ -43,7 +43,6 @@ app.get('/api/persons/:id', (request, response) => {
         response.json(person)
       }
       else {
-        console.log('no existe')
         response.status(404).end()
       }
     })
@@ -90,6 +89,19 @@ app.post('/api/persons', (request, response) => {
       response.json(savedPerson)
     })
     .catch(error => { next(error) })
+})
+
+// update one
+app.put('/api/persons/:id', (request, response, next) => {
+  const person = {
+    name: request.body.name,
+    number: request.body.number,
+  }
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => next(error))
 })
 
 // unknown endpoint middleware

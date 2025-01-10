@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '.env' });
+require('dotenv').config({ path: '.env' })
 const morgan = require('morgan')
 const cors = require('cors')
 
@@ -15,13 +15,13 @@ morgan.token('body', (req) => {
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 debugger
-const Person = require('./models/contact');
+const Person = require('./models/contact')
 
 // get info
-app.get('/info', (request, response, next) => { 
+app.get('/info', (request, response, next) => {
   const date = new Date()
   Person.find({})
-    .then(persons => { 
+    .then(persons => {
       response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`)
     })
     .catch(error => { next(error) })
@@ -77,10 +77,10 @@ app.post('/api/persons', (request, response, next) => {
 // update one
 app.put('/api/persons/:id', (request, response, next) => {
   const { name, number } = request.body
-  
+
   Person.findByIdAndUpdate(
-    request.params.id, 
-    { name, number }, 
+    request.params.id,
+    { name, number },
     { new: true, runValidators: true, context: 'query' },
 
   )
@@ -96,12 +96,12 @@ const unknownEndpoint = (request, response) => {
 }
 app.use(unknownEndpoint)
 
-// error handler middleware 
+// error handler middleware
 const errorHandler = (error, request, response, next) => {
   console.error('error'. error)
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  }
   if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
   }

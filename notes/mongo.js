@@ -1,11 +1,11 @@
-require('dotenv').config({ path: '.env' });
+require('dotenv').config({ path: '.env' })
 const mongoose = require('mongoose')
 
 // Conection
-const username = process.env.MONGODB_USERNAME;
-const password = process.env.MONGODB_PASSWORD;
-const cluster = "cluster0";
-const appName = "Cluster0";
+const username = process.env.MONGODB_USERNAME
+const password = process.env.MONGODB_PASSWORD
+const cluster = 'cluster0'
+const appName = 'Cluster0'
 
 const url =`mongodb+srv://${username}:${password}@${cluster}.l3wwy.mongodb.net/appNote?retryWrites=true&w=majority&appName=${appName}`
 mongoose.set('strictQuery',false)

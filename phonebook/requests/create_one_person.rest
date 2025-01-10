@@ -2,8 +2,8 @@ POST http://localhost:3001/api/persons
 Content-Type: application/json
 
 {
-  "name": "APITester",
-  "number": "023-345678"
+  "name": "Invalid Number Test",
+  "number": "123123123"
 }
 ###
 
@@ -11,6 +11,6 @@ POST http://localhost:3001/api/persons
 Content-Type: application/json
 
 {
-  "name": "Testerator",
+  "name": "Va",
   "number": "023-346243"
 }
